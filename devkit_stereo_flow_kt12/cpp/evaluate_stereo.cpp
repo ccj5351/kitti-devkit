@@ -126,7 +126,7 @@ vector<float> disparityErrorsAverage (DisparityImage &D_gt,DisparityImage &D_ori
   return errors;
 }
 
-bool eval (string result_sha,Mail* mail) {
+bool eval (string result_sha, bool log_colors=false, Mail* mail = NULL) {
 
   // ground truth and result directories
   string gt_noc_dir      = "data/stereo_flow/disp_noc";
@@ -236,7 +236,7 @@ bool eval (string result_sha,Mail* mail) {
         fclose(errors_occ_avg_file);
 
         // save error image
-        png::image<png::rgb_pixel> D_err = D_ipol.errorImage(D_gt_noc,D_gt_occ);
+        png::image<png::rgb_pixel> D_err = D_ipol.errorImage(D_gt_noc,D_gt_occ, log_colors);
         D_err.write(result_dir + "/errors_img/" + prefix + ".png");
         
         // compute maximum disparity
@@ -358,24 +358,25 @@ bool eval (string result_sha,Mail* mail) {
 
 int32_t main (int32_t argc,char *argv[]) {
 
-  // we need 2 or 4 arguments!
-  if (argc!=2 && argc!=4) {
-    cout << "Usage: ./eval_stereo result_sha [user_sha email]" << endl;
+  // we need 3 or 5 arguments!
+  if (argc!=3 && argc!=5) {
+    cout << "Usage: ./eval_stereo result_sha is_log_colors [user_sha email]" << endl;
     return 1;
   }
 
   // read arguments
   string result_sha = argv[1];
+  string is_log_colors = argv[2];
 
   // init notification mail
   Mail *mail;
-  if (argc==4) mail = new Mail(argv[3]);
+  if (argc== 5) mail = new Mail(argv[4]);
   else         mail = new Mail();
   mail->msg("Thank you for participating in our evaluation!");
 
   // run evaluation
-  bool success = eval(result_sha,mail);
-  if (argc==4) mail->finalize(success,"stereo",result_sha,argv[2]);
+  bool success = eval(result_sha, is_log_colors == "true", mail);
+  if (argc==5) mail->finalize(success,"stereo",result_sha,argv[3]);
   else         mail->finalize(success,"stereo",result_sha);
 
   // send mail and exit

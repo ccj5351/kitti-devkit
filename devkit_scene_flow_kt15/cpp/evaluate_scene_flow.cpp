@@ -9,8 +9,8 @@
 #include "utils.h"
 
 #define NUM_TEST_IMAGES 200
-//#define NUM_ERROR_IMAGES 20
-#define NUM_ERROR_IMAGES 200
+#define NUM_ERROR_IMAGES 20
+//#define NUM_ERROR_IMAGES 200
 #define ABS_THRESH 3.0
 #define REL_THRESH 0.05
 
@@ -362,7 +362,7 @@ bool resultsAvailable (string dir,string folder_name,Mail* mail) {
   return count==NUM_TEST_IMAGES;
 }
 
-bool eval (string result_sha,Mail* mail) {
+bool eval (string result_sha, bool log_colors= true, Mail* mail = NULL) {
 
   // ground truth and result directories
   string gt_img_dir = "data/scene_flow/image_2";
@@ -508,7 +508,8 @@ bool eval (string result_sha,Mail* mail) {
           fclose(errors_occ_file);
 
           // save error image
-          D_ipol_0.errorImage(D_gt_noc_0,D_gt_occ_0,true).write(result_dir + "/errors_disp_img_0/" + prefix + ".png");
+          //D_ipol_0.errorImage(D_gt_noc_0,D_gt_occ_0, true).write(result_dir + "/errors_disp_img_0/" + prefix + ".png");
+          D_ipol_0.errorImage(D_gt_noc_0,D_gt_occ_0, log_colors).write(result_dir + "/errors_disp_img_0/" + prefix + ".png");
 
           // compute maximum disparity
           float max_disp = D_gt_occ_0.maxDisp();
@@ -564,7 +565,8 @@ bool eval (string result_sha,Mail* mail) {
           fclose(errors_occ_file);
 
           // save error image
-          F_ipol.errorImage(F_gt_noc,F_gt_occ,true).write(result_dir + "/errors_flow_img/" + prefix + ".png");
+          //F_ipol.errorImage(F_gt_noc,F_gt_occ,true).write(result_dir + "/errors_flow_img/" + prefix + ".png");
+          F_ipol.errorImage(F_gt_noc,F_gt_occ, log_colors).write(result_dir + "/errors_flow_img/" + prefix + ".png");
 
           // find maximum ground truth flow
           float max_flow = F_gt_occ.maxFlow();
@@ -620,7 +622,8 @@ bool eval (string result_sha,Mail* mail) {
           fclose(errors_occ_file);
 
           // save error image
-          D_ipol_1.errorImage(D_gt_noc_1,D_gt_occ_1,true).write(result_dir + "/errors_disp_img_1/" + prefix + ".png");
+          //D_ipol_1.errorImage(D_gt_noc_1,D_gt_occ_1,true).write(result_dir + "/errors_disp_img_1/" + prefix + ".png");
+          D_ipol_1.errorImage(D_gt_noc_1,D_gt_occ_1, log_colors).write(result_dir + "/errors_disp_img_1/" + prefix + ".png");
 
           // compute maximum disparity
           float max_disp = D_gt_occ_1.maxDisp();
@@ -741,30 +744,30 @@ bool eval (string result_sha,Mail* mail) {
 	return true;
 }
 
-int32_t main (int32_t argc,char *argv[]) {
+int32_t main (int32_t argc, char *argv[]) {
 
-  // we need 2 or 4 arguments!
-  if (argc!=2 && argc!=4) {
-    cout << "Usage: ./eval_scene_flow result_sha [user_sha email]" << endl;
+  // we need 3 or 5 arguments!
+  if (argc!=3 && argc!=5) {
+    cout << "Usage: ./eval_scene_flow result_sha is_log_colors [user_sha email]" << endl;
     return 1;
   }
 
   // read arguments
   string result_sha = argv[1];
-  
+  string is_log_colors = argv[2];
+
   // init notification mail
   Mail *mail;
-  if (argc==4) mail = new Mail(argv[3]);
+  if (argc==5) mail = new Mail(argv[4]);
   else         mail = new Mail();
   mail->msg("Thank you for participating in our evaluation!");
 
   // run evaluation
-  bool success = eval(result_sha,mail);
-  if (argc==4) mail->finalize(success,"scene_flow",result_sha,argv[2]);
+  bool success = eval(result_sha, is_log_colors == "true", mail);
+  if (argc==5) mail->finalize(success,"scene_flow",result_sha,argv[3]);
   else         mail->finalize(success,"scene_flow",result_sha);
 
   // send mail and exit
   delete mail;
   return 0;
 }
-
