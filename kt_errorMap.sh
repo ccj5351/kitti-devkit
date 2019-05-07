@@ -14,6 +14,7 @@ function makeDir () {
 
 
 #### KT15
+isLogColor=false
 declare -a result_shas=(
 "cbmv-gc-F8-RMSp-KT15-epo1k-4dsConv-k5-testKT15"
 #"gcnet-KT15-epo600-4dsConv-k5-testKT15"
@@ -25,8 +26,8 @@ declare -a result_shas=(
 #"cbmvnet-gc-F8-RMSp-sf-epo26Based-epo30-4dsConv-k5-testKT15"
 )
 
-#flag=true
-flag=false
+flag=true
+#flag=false
 if [ "$flag" = true ]; then
 	for idx in $(seq 0 0)
 	do
@@ -44,20 +45,21 @@ if [ "$flag" = true ]; then
 		done
 
 		echo "Processing KT15: ${result_sha}"
-		./build/evaluate_stereokt15 $result_sha
+		./build/evaluate_stereokt15 $result_sha $isLogColor
 	done
 fi
 
 
 #### KT12
+isLogColor=true
 declare -a result_shas=(
 "cbmvnet-gc-F8-RMSp-sfF3kSimR-epo30-4dsConv-k5-testKT12"
 #"gcnet-F8-RMSp-sfF3kSimR-epo30-4dsConv-k5-testKT12"
 #"gcnet-F8-RMSp-sf-epo30-4dsConv-k5-testKT12" 
 #"cbmvnet-gc-F8-RMSp-sf-epo26Based-epo30-4dsConv-k5-testKT12"
 )
-flag=true
-#flag=false
+#flag=true
+flag=false
 if [ "$flag" = true ]; then
 	for idx in $(seq 0 0)
 	do
@@ -72,6 +74,6 @@ if [ "$flag" = true ]; then
 			./build/pfmDisp2png $pfm_file $png_file
 		done
 		echo "Processing KT12: ${result_sha}"
-		./build/evaluate_stereokt12 $result_sha
+		./build/evaluate_stereokt12 $result_sha $isLogColor
 	done
 fi
