@@ -41,7 +41,7 @@ function makeDir() {
 #""" Middlebury Half size """
 flag=false
 #flag=true
-app=/home/ccj/PKLS/cpp/build/get_color_disp
+app=./build/get_color_disp
 if [ "$flag" = true ]; then
 	echo "Processing Middlebury V3"
 	tmpname="cbmvnet-gc-F8-RMSp-sf-epo26Based-epo30-4dsConv-k5-testMBV3/disp-epo-023"
