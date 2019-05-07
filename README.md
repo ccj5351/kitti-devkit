@@ -70,8 +70,13 @@ The following shows the input disparity, the color version disparity, error map 
 - ![disp-err](./imgs/kt15_000002_10_logcolorErrorMap.png)
 - ![err-scale](./imgs/kitti_scale.png)
 
-## Generate KITTI-color-map Disparities for Middlebury 2014, ETH3D (and KITTI off course)
+## Generate KITTI-color-map Disparities for Middlebury 2014, ETH3D (and KITTI of course)
+
+
 The executable `./build/get_color_disp` is used to directly convert your `.pfm` disparity prediction to color `.png` files. 
+
+### Conver disparity prediction to color png version
+
 We provide the `bash` file `get_color_disp.sh` for Middlebury 2014 and KITTI 2015.
 
 ```
@@ -90,5 +95,20 @@ where,
 - `$input_disp_file` is the input disparity, i.e., your predicted disparity file in `pfm` format;
 - `$output_disp_file` is the `color png` disparity output.
 
+### Convert ground truth disparity to interpolated color png version
+
+Still use the exectuable `get_color_disp`, with `$input_disp_file` set be equal to `$gt_disp_file`. See the bash file `get_color_disp.sh` for details.
+
+Take a hard image `000104_10.png` from KITTI 2015 as an example, we show the reference image, 
+color interpolated ground truth disparity, color disparity predition, and error map and its error scale.
+
+- ![left-input](./imgs/000104_kt15.png)
+- ![disp-gt](./imgs/000104_kt15_disp_gt.png)
+- ![disp](./imgs/000104_cbmvgcnet_kt15_disp.png)
+- ![err](./imgs/000104_cbmvgcnet_kt15_err.png)
+- ![err-scale](./imgs/kitti_scale.png)
+
+
 ## A Simple Python Code for bad-x (e.g, x = 3.0) error calculation
 We provide a simple python code, shown in the file `kt_bad3_error.py`, to calculate bad-x (e.g, x=3.0) error for each input image. See this file for details.
+

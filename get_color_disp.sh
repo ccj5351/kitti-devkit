@@ -79,7 +79,7 @@ if [ "$flag" = true ]; then
 		cate=$(printf "%06d" "$idx")
 		gt_disp_file="${my_root}/datasets/KITTI-2015/training/disp_occ_0_pfm/${cate}_10.pfm"
 		input_disp_file="./results/${tmpname}/${cate}_10.pfm"
-		input_disp_file="${my_root}/datasets/KITTI-2015/training/disp_occ_0_pfm/${cate}_10.pfm"
+		#input_disp_file="${my_root}/datasets/KITTI-2015/training/disp_occ_0_pfm/${cate}_10.pfm"
 		output_disp_file="$dstDir/${cate}.png"
 		$app $gt_disp_file $input_disp_file $output_disp_file
 	done
