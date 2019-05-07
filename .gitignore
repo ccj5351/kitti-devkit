@@ -44,6 +44,6 @@ results/
 data/
 build/
 lib/
-
+compile_kt.sh
 *.pyc
 .*.swp
