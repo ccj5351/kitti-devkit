@@ -41,7 +41,7 @@ def save_png(data,path,cmap):
 
 
 csv_file = os.path.join('/media/ccjData2/research-projects/kitti-devkit/results/tmp_err.csv')
-print "write ", csv_file
+print ("write ", csv_file)
 with open( csv_file, 'a') as fwrite:
     for i in range(0, imgNum):
     #for i in range(0, 200):
