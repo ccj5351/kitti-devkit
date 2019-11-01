@@ -14,8 +14,9 @@ function makeDir () {
 
 
 #### KT15
-isLogColor=false
+isLogColor=true
 declare -a result_shas=(
+#'/home/ccj/atten-stereo/results/asn-embed-k13-sga-sfepo10-kt15epo200/' 
 "cbmv-gc-F8-RMSp-KT15-epo1k-4dsConv-k5-testKT15"
 #"gcnet-KT15-epo600-4dsConv-k5-testKT15"
 #"cbmvnet-gc-F8-RMSp-sfM3kSimR-epo30-4dsConv-k5-testKT15"

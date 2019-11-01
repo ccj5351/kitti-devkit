@@ -67,11 +67,7 @@ if [ "$flag" = true ]; then
 	tmpname="cbmvnet-gc-F8-RMSp-sf-epo26Based-epo30-4dsConv-k5-testKT15/disp-epo-023"
 	#tmpname="gcnet-F8-RMSp-sf-epo30-4dsConv-k5-testKT15/disp-epo-030"
 	dstDir="./results/${tmpname}/color_disp"
-	if [ ! -d $dstDir ]; then
-		mkdir -p $dstDir
-		echo "mkdir $dstDir"
-	fi
-
+	makeDir $dstDir
 	#for idx in $(seq 0 14)
 	#for idx in $(seq 0 0)
 	for idx in 104
