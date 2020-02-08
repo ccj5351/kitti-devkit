@@ -16,7 +16,9 @@ function makeDir () {
 #### KT15
 isLogColor=true
 declare -a result_shas=(
-#'/home/ccj/atten-stereo/results/asn-embed-k13-sga-sfepo10-kt15epo200/' 
+'cvpr2020-rebuttal/gcnet-F8-RMSp-sf-epo30-4dsConv-k5-testKT15'
+'cvpr2020-rebuttal/cbmvnet-gc-F8-RMSp-sf-epo26Based-epo30-4dsConv-k5-testKT15'
+#'/home/ccj/atten-stereo/results/asn-embed-k13-sga-sfepo10-kt15epo200/'
 "cbmv-gc-F8-RMSp-KT15-epo1k-4dsConv-k5-testKT15"
 #"gcnet-KT15-epo600-4dsConv-k5-testKT15"
 #"cbmvnet-gc-F8-RMSp-sfM3kSimR-epo30-4dsConv-k5-testKT15"
@@ -37,9 +39,10 @@ if [ "$flag" = true ]; then
 		### pfm2png first;
 		#echo "converting pfm to png disp"
     for name in $(seq 0 199)
+    #for name in $(seq 0 0)
 		do 
 			img_name="$(printf "%06d" "$name")_10"
-			pfm_file="./results/${result_sha}/disp-epo-539/${img_name}.pfm"
+			pfm_file="./results/${result_sha}/disp-epo-030/${img_name}.pfm"
 			png_file="./results/${result_sha}/disp_0/${img_name}.png"
 			echo "$pfm_file to $png_file"
 			./build/pfmDisp2png $pfm_file $png_file

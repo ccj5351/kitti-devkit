@@ -17,6 +17,8 @@ function makeDir () {
 declare -a result_shas=(
 		#'/media/ccjData2/GCNet/results/KT-raw/cbmvnet-gc-F8-RMSp-sf-epo26Based-epo30-4dsConv-k5-testKTRaw/disp-epo-023' 
 		#'/media/ccjData2/GCNet/results/KT-raw/gcnet-F8-RMSp-sf-epo30-4dsConv-k5-testKTRaw/disp-epo-030'
+		'/home/ccj/atten-stereo/results/dispnet-D192-BN-corrV1-sfepo20-kt15epo400-KT15Submit/disp-epo-375/disp-pfm'
+		'/home/ccj/atten-stereo/results/gcnet-D192-sfepo20-kt15epo400-KT15Submit/disp-epo-375/disp-pfm'
 		'/media/ccjData2/research-projects/GCNet/results/cbmvnet-gc-F8-RMSp-sfepo26-kt15epo300-4dsConv-k5-testKT15BenchSubmit/disp-epo-290'
 		'/media/ccjData2/research-projects/GCNet/results/cbmvnet-gc-F8-RMSp-sfepo26-kt15epo300-4dsConv-k5-testKT15BenchSubmit/disp-epo-206'
 		'/media/ccjData2/research-projects/GCNet/results/cbmvnet-gc-F8-RMSp-sfepo26-kt12epo300-4dsConv-k5-testKT12BenchSubmit/disp-epo-300'
@@ -25,6 +27,8 @@ declare -a result_shas=(
 		)
 
 declare -a result_shas2=(
+		'/home/ccj/atten-stereo/results/dispnet-D192-BN-corrV1-sfepo20-kt15epo400-KT15Submit/disp-epo-375/disp-png'
+		'/home/ccj/atten-stereo/results/gcnet-D192-sfepo20-kt15epo400-KT15Submit/disp-epo-375/disp-png'
 		'/media/ccjData2/research-projects/GCNet/results/cbmvnet-gc-F8-RMSp-sfepo26-kt15epo300-4dsConv-k5-testKT15BenchSubmit/disp-epo-290-png'
 		'/media/ccjData2/research-projects/GCNet/results/cbmvnet-gc-F8-RMSp-sfepo26-kt15epo300-4dsConv-k5-testKT15BenchSubmit/disp-epo-206-png'
 		'/media/ccjData2/research-projects/GCNet/results/cbmvnet-gc-F8-RMSp-sfepo26-kt12epo300-4dsConv-k5-testKT12BenchSubmit/disp-epo-300-png'
@@ -35,7 +39,7 @@ declare -a result_shas2=(
 flag=true
 #flag=false
 if [ "$flag" = true ]; then
-	for idx in $(seq 2 4)
+	for idx in $(seq 0 0)
 	do
 		result_sha=${result_shas[idx]}
 		result_sha2=${result_shas2[idx]}
@@ -43,7 +47,8 @@ if [ "$flag" = true ]; then
 		### pfm2png first;
 		#echo "converting pfm to png disp"
     #for name in $(seq 599 1149)
-    for name in $(seq 0 194)
+    #for name in $(seq 0 194)
+    for name in $(seq 0 199)
 		do 
 			#img_name="$(printf "0%09d" "$name")"
 			img_name="$(printf "%06d_10" "$name")"
