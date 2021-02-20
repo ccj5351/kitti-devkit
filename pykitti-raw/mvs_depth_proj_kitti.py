@@ -16,7 +16,7 @@ import cv2
 from collections import Counter
 from os.path import join as pjoin
 
-#import pykitti.utils as utils
+from warp_src_to_ref_np import get_rel_extrinsicM, warp_src_to_ref_naive_v2, warp_src_to_ref_naive
 
 """ this function is adpoted from https://github.com/utiasSTARS/pykitti/blob/master/pykitti/utils.py """ 
 def read_calib_file(filepath):
@@ -176,10 +176,6 @@ def get_depth_from_velodyne(
         return depth, count, res
 
 
-def get_rel_extrinsicM(ext_ref, ext_src):
-    ''' Get the extrinisc matrix from ref_view to src_view '''
-    return ext_src.dot( np.linalg.inv( ext_ref))
-
 if __name__ == "__main__":
 
     # Change this to the directory where you store KITTI data
@@ -244,109 +240,6 @@ if __name__ == "__main__":
         #    cam_relative_poses_local.append(rel_extM)
     cam_relative_poses_local = [get_rel_extrinsicM(extM_ref, M) for M in extM_local]
     
-    def warp_ref_to_src_extM_v1(
-        img_ref, dep_ref, 
-        extM_ref, extM_src, 
-        K_ref, K_src,
-        is_identy = False):
-        if is_identy:
-            return img_ref
-        
-        #homography
-        height, width = img_ref.shape[0:2]
-        #normal vector
-        R_ref, t_ref = extM_ref[0:3, 0:3], extM_ref[0:3, 3:4]
-        R_src, t_src = extM_src[0:3, 0:3], extM_src[0:3, 3:4]
-        #fronto_direction = R_ref[2:3, :]
-        fronto_direction = np.array([[.0, .0, 1.]]).astype(np.float32)
-        c_ref = - np.dot(R_ref.T, t_ref)
-        c_src = - np.dot(R_src.T, t_src)
-        c_relative = c_src - c_ref
-
-        # compute
-        c_rel_n =  np.dot(c_relative, fronto_direction)
-        I = np.eye(3)
-        h1 = np.dot(K_src, R_src) 
-        h3 = np.dot(R_ref.T, np.linalg.inv(K_ref))
-
-        warped_img = np.zeros((height, width, 3), dtype=np.uint8) # color image
-        for y in range(height):
-            for x in range(width):
-                d = dep_ref[y, x]
-                if abs(d) > 1e-3:
-                    h2 = I - c_rel_n/d
-                    r = np.dot(np.dot(h1, h2), h3)
-                    x_new, y_new = int(r[0, 0]/r[2, 0]), int(r[1, 0]/r[2, 0])
-                    if 0<= x_new < width and 0<= y_new < height:
-                        warped_img[y_new, x_new,:] = img_ref[y,x,:]
-                        #print ("pixel (%d,%d) == warped ==> (%d, %d), val = %s" %(y,x,y_new,x_new,warped_img[y_new,x_new,:]))
-        return warped_img
-
-    
-    def warp_ref_to_src_naive_v2(img_ref, dep_ref, pose_rel_ref_2_src, K_src, K_ref, is_identy = False):
-        if is_identy:
-            return img_ref
-        
-        #homography
-        height, width = img_ref.shape[0:2]
-        #normal vector
-        norm_vec = np.array([[.0, .0, 1.]]).astype(np.float32)
-        R_rel_ref_2_src = pose_rel_ref_2_src[0:3, 0:3]
-        t_rel_ref_2_src = pose_rel_ref_2_src[0:3, 3:4]
-        print ("R_ref2_src = \n%s" %R_rel_ref_2_src)
-        print ("t_ref2_src = \n%s" %t_rel_ref_2_src)
-        tn = t_rel_ref_2_src.dot(norm_vec)
-        I = np.eye(3)
-        inv_K_ref = np.linalg.inv(K_ref)
-        h1 = K_src.dot(R_rel_ref_2_src).dot(inv_K_ref)
-        h2 = K_src.dot(tn).dot(inv_K_ref)
-        warped_img = np.zeros((height, width, 3), dtype=np.uint8) # color image
-        for y in range(height):
-            for x in range(width):
-                d = dep_ref[y, x]
-                if abs(d) > 1e-3:
-                    H = h1 - h2/d
-                    r = H.dot(np.array([[x], [y], [1]]))
-                    x_new, y_new = int(r[0, 0]/r[2, 0]), int(r[1, 0]/r[2, 0])
-                    if 0<= x_new < width and 0<= y_new < height:
-                        warped_img[y_new, x_new,:] = img_ref[y,x,:]
-                        #print ("pixel (%d,%d) == warped ==> (%d, %d), val = %s" %(y,x,y_new,x_new,warped_img[y_new,x_new,:]))
-        return warped_img
-    
-    
-    def warp_ref_to_src_naive(img_src, dep_ref, pose_rel_ref_2_src, K_src, K_ref, is_identy = False):
-        if is_identy:
-            return img_src
-        
-        #homography
-        height, width = img_src.shape[0:2]
-        #normal vector
-        norm_vec = np.array([[.0, .0, 1.]]).astype(np.float32)
-        R_rel_ref_2_src = pose_rel_ref_2_src[0:3, 0:3]
-        t_rel_ref_2_src = pose_rel_ref_2_src[0:3, 3:4]
-        print ("R_ref2_src = \n%s" %R_rel_ref_2_src)
-        print ("t_ref2_src = \n%s" %t_rel_ref_2_src)
-        tn = t_rel_ref_2_src.dot(norm_vec)
-        I = np.eye(3)
-        #h1 = K_src.dot(R_rel_ref_2_src.T)
-        h1 = K_src.dot(R_rel_ref_2_src)
-        h3 = np.linalg.inv(K_ref)
-        warped_src = np.zeros((height, width, 3), dtype=np.uint8) # color image
-        for y in range(height):
-            for x in range(width):
-                d = dep_ref[y, x]
-                if abs(d) > 1e-3:
-                    h2 = I - tn/d
-                    h = np.dot(np.dot(h1, h2), h3)
-                    r = np.dot(h, np.array([[x], [y], [1]]))
-                    x_new, y_new = int(r[0, 0]/r[2, 0]), int(r[1, 0]/r[2, 0])
-                    if 0<= x_new < width and 0<= y_new < height:
-                        warped_src[y, x, :] = img_src[y_new, x_new,:]
-                        #print ("pixel (%d,%d) == warped ==> (%d, %d), val = %s" %(y,x,y_new,x_new,warped_img[y_new,x_new,:]))
-        return warped_src
-
-
-
 
     #f2 = plt.figure()
     #ax2 = f2.add_subplot(100+10*len(local_window)+len(local_window))
@@ -357,9 +250,9 @@ if __name__ == "__main__":
     my_velo_path = os.path.join(my_base_path, date, my_drive, 'velodyne_points/data')
     velo_files_local = [pjoin(my_velo_path, '%010d.bin'%idx) for idx in local_window]
 
-    # warp
     img_ref_np = np.asarray(ref_frame)
     imgH, imgW = img_ref_np.shape[0:2] 
+    
     dep_ref = generate_depth_map(
             calib_dir = pjoin(my_base_path, date), 
             velo_file_name = velo_files_local[cur_t_idx], 
@@ -382,6 +275,9 @@ if __name__ == "__main__":
         #ax[2, i].imshow(count, cmap='gray')
         #ax[2, i].set_title('count depth from velodyne for %s (cam2)'%n)
         
+        # warp
+        img_src_np = np.asarray(frames_local[i])
+        
         _, depth_good = generate_depth_map(
             calib_dir = pjoin(my_base_path, date), 
             velo_file_name = velo_files_local[i], 
@@ -394,24 +290,24 @@ if __name__ == "__main__":
         #ax[2, i].set_title('good depth from velodyne for %s (cam2)'%n)
         
         if 1:
-            warped_img = warp_ref_to_src_naive(
-                img_ref_np, dep_ref, 
+            warped_img = warp_src_to_ref_naive(
+                img_src_np, dep_ref, 
                 pose_rel_ref_2_src = cam_relative_poses_local[i],
                 K_src = K_cam2,
                 K_ref = K_cam2,
                 #is_identy= (i==cur_t_idx)
                 )
         else:
-            warped_img =  warp_ref_to_src_extM_v1(
-                img_ref_np, dep_ref, 
-                extM_ref = extM_local[cur_t_idx], 
-                extM_src = extM_local[i], 
-                K_ref = K_cam2, 
+            warped_img = warp_src_to_ref_naive_v2(
+                img_src_np, dep_ref, 
+                pose_rel_ref_2_src = cam_relative_poses_local[i],
                 K_src = K_cam2,
-                is_identy = False)
+                K_ref = K_cam2,
+                #is_identy= (i==cur_t_idx)
+                )
 
         ax[2, i].imshow(warped_img)
-        ax[2, i].set_title('warped ref to src view for %s (cam2)'%n)
+        ax[2, i].set_title('warped src to ref view for %s (cam2)'%n)
         
         if 0:
             x_img = [p[0] for p in pts]
